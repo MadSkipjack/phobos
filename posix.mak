@@ -33,7 +33,11 @@ ifeq (,$(OS))
             ifeq (FreeBSD,$(OS))
                 OS:=freebsd
             else
-                $(error Unrecognized or unsupported OS for uname: $(OS))
+				ifeq (OpenBSD,$(OS))
+					OS:=openbsd
+				else
+					$(error Unrecognized or unsupported OS for uname: $(OS))
+				endif
             endif
         endif
     endif
@@ -112,7 +116,8 @@ DFLAGS := -I$(DRUNTIME_PATH)/import $(DMDEXTRAFLAGS) -w -d -property -m$(MODEL)
 ifeq ($(BUILD),debug)
 	DFLAGS += -g -debug
 else
-	DFLAGS += -O -release
+	#XXX fix: DFLAGS += -O -release
+	DFLAGS += -release
 endif
 
 # Set DOTOBJ and DOTEXE
@@ -131,7 +136,11 @@ ifeq (,$(findstring win,$(OS)))
     ifeq (freebsd,$(OS))
         LINKOPTS=-L-L$(ROOT)
     else
-        LINKOPTS=-L-ldl -L-L$(ROOT)
+		ifeq (openbsd,$(OS))
+			LINKOPTS=-L-lc -L-L$(ROOT)
+		else
+			LINKOPTS=-L-ldl -L-L$(ROOT)
+		endif
     endif
 else
     LINKOPTS=-L/co $(LIB)
@@ -166,6 +175,7 @@ STD_NET_MODULES = $(addprefix std/net/, isemail curl)
 EXTRA_MODULES_LINUX := $(addprefix std/c/linux/, linux socket)
 EXTRA_MODULES_OSX := $(addprefix std/c/osx/, socket)
 EXTRA_MODULES_FREEBSD := $(addprefix std/c/freebsd/, socket)
+EXTRA_MODULES_OPENBSD := $(addprefix std/c/openbsd/, socket)
 EXTRA_MODULES_WIN32 := $(addprefix std/c/windows/, com stat windows		\
 		winsock) $(addprefix std/windows/, charset iunknown syserror)
 ifeq (,$(findstring win,$(OS)))

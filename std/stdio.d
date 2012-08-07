@@ -58,6 +58,12 @@ version (FreeBSD)
     alias core.stdc.stdio.fopen fopen64;
 }
 
+version (OpenBSD)
+{
+    version = GENERIC_IO;
+    alias core.stdc.stdio.fopen fopen64;
+}
+
 version(Windows)
 {
     alias core.stdc.stdio.fopen fopen64;

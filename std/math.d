@@ -3874,6 +3874,18 @@ body
                 ;
             }
         }
+        else version (OpenBSD)
+        {
+            // XXX: Replace by ASM
+            sizediff_t i = A.length - 1;
+            real r = A[i];
+            while (--i >= 0)
+            {
+                r *= x;
+                r += A[i];
+            }
+            return r;
+        }
         else
         {
             static assert(0);
